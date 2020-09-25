@@ -12,29 +12,22 @@ class Sudoku:
 
     @staticmethod
     def mk_grid():
-        grid = [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        ]
+        grid = []
+        for _ in range(9):
+            grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
         return grid
 
-    def gen_grid(self):
+    def fill_grid(self, random=False):
         lst = list(range(1, 10))
         for y in range(9):
             for x in range(9):
                 if self.grid[y][x] == 0:
-                    rd.shuffle(lst)
+                    if random:
+                        rd.shuffle(lst)
                     for n in lst:
                         if self.possible(y, x, n):
                             self.grid[y][x] = n
-                            if self.gen_grid():
+                            if self.fill_grid():
                                 return True
                             self.grid[y][x] = 0
                     return False
@@ -56,16 +49,3 @@ class Sudoku:
                 if self.grid[y_sqr+i][x_sqr+j] == n:
                     return False
         return True
-
-    def solve(self):
-        for y in range(9):
-            for x in range(9):
-                if self.grid[y][x] == 0:
-                    for n in range(1, 10):
-                        if self.possible(y, x, n):
-                            self.grid[y][x] = n
-                            self.solve()
-                            self.grid[y][x] = 0
-                    return
-        print(np.matrix(self.grid))
-        input("Next?")
