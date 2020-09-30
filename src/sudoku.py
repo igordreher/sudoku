@@ -6,6 +6,7 @@ class Sudoku:
 
     def __init__(self):
         self.grid = self.mk_grid()
+        self.gen_puzzle()
 
     def __repr__(self):
         return str(np.array(self.grid))
@@ -47,7 +48,9 @@ class Sudoku:
 
         return loop(random, solve)
 
-    def gen_puzzle(self, clears=5):
+    def gen_puzzle(self, clears=20):
+        self.grid = self.mk_grid()
+        self.fill_grid()
 
         def loop():
             nonlocal clears
