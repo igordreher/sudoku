@@ -3,22 +3,36 @@ from sudoku import Sudoku
 
 
 class App(Frame):
-    def __init__(self, master=None, width='500', height='500'):
-        super().__init__(master=master)
+    def __init__(self, master=None, cell_size=int(40)):
+        super().__init__(master=master, width=cell_size*9, height=cell_size*9)
         self.master = master
         self.master.title("Sudoku")
-        self.pack(fill=BOTH, expand=1)
+        self.cell_size = cell_size
+        self.size = self.cell_size*9
         self._init_canvas()
+        self.center()
+        self.pack()
+
+    def center(self):
+        root = self.master
+        screen_w = self.winfo_screenwidth()
+        screen_y = self.winfo_screenheight()
+        x = int(screen_w/2 - self.winfo_reqwidth()/2)
+        y = int(screen_y/2 - self.winfo_reqheight()/2) 
+        root.geometry("+{}+{}".format(x, y))
+        self.update()
+        root.minsize(self.winfo_reqwidth(), self.winfo_reqheight())
+        root.maxsize(self.winfo_reqwidth(), self.winfo_reqheight())
 
     def _init_canvas(self):
-        self.canvas = Canvas(self)
+        self.canvas = Canvas(self, width=self.size, height=self.size)
         self._init_grid()
-        self.canvas.pack(fill=BOTH, expand=1)
+        self.canvas.pack()
 
     def _init_grid(self):
         su = Sudoku()
         grid = su.grid
-        size = 40
+        size = self.cell_size
 
         for y in range(9):
             for x in range(9):
@@ -30,13 +44,10 @@ class App(Frame):
                     e = Entry(self.canvas, justify=CENTER)
                     e.place(x=x*size, y=y*size, width=size, height=size)
 
-    def say_hi(self):
-        print("Hello World")
-
 
 def main():
     root = Tk()
-    app = App(master=root)
+    app = App(root)
     app.mainloop()
 
 
