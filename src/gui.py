@@ -1,4 +1,5 @@
 from tkinter import *
+from functools import partial
 from sudoku import Sudoku
 
 
@@ -11,19 +12,30 @@ class App(Frame):
         self.cell_size = cell_size
         self.size = self.cell_size*9+3*2
         self._init_canvas()
-        # self.menu()
+        self.menu()
         self.center()
         self.pack(fill=BOTH, expand=1)
 
-    # def menu(self):
-        # def hello():
-        #     print('Hello')
-        # menubar = Menu(self)
-        # self.update()
-        # options = Menu(menubar, tearoff=0)
-        # options.add_command(label='hello', command=hello)
-        # menubar.add_cascade(label='menu', menu=options)
-        # self.master.config(menu=menubar)
+    def menu(self):
+        menubar = Menu(self)
+        new_game = Menu(menubar, tearoff=0)
+        new_game.add_command(label='Easy', command=partial(self.new_puzzle, dif='easy'))
+        new_game.add_command(label='Normal', command=partial(self.new_puzzle, dif='normal'))
+        new_game.add_command(label='Hard', command=partial(self.new_puzzle, dif='hard'))
+        menubar.add_cascade(label='New Game', menu=new_game)
+        self.master.config(menu=menubar)
+
+    def new_puzzle(self, dif='normal', hints=0):
+        if dif == 'normal':
+            self.puzzle.gen_puzzle(81-40)
+        elif dif == 'easy':
+            self.puzzle.gen_puzzle(81-60)
+        elif dif == 'hard':
+            self.puzzle.gen_puzzle(81-26)
+        else:
+            self.puzzle.gen_puzzle(81-int(hints))
+
+        self._init_grid()
 
     def center(self):
         root = self.master
@@ -37,7 +49,7 @@ class App(Frame):
 
     def _init_canvas(self):
         self.canvas = Canvas(self, bg='black')
-        self._init_grid()
+        self.new_puzzle()
         self.canvas.pack(fill=BOTH, expand=1)
 
     def _init_grid(self):
