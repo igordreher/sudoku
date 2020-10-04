@@ -19,10 +19,14 @@ class App(Frame):
     def menu(self):
         menubar = Menu(self)
         new_game = Menu(menubar, tearoff=0)
-        new_game.add_command(label='Easy', command=partial(self.new_puzzle, dif='easy'))
-        new_game.add_command(label='Normal', command=partial(self.new_puzzle, dif='normal'))
-        new_game.add_command(label='Hard', command=partial(self.new_puzzle, dif='hard'))
+        new_game.add_command(label='Easy', command=partial(
+            self.new_puzzle, dif='easy'))
+        new_game.add_command(label='Normal', command=partial(
+            self.new_puzzle, dif='normal'))
+        new_game.add_command(label='Hard', command=partial(
+            self.new_puzzle, dif='hard'))
         menubar.add_cascade(label='New Game', menu=new_game)
+        menubar.add_command(label='Solve', command=self.solve)
         self.master.config(menu=menubar)
 
     def new_puzzle(self, dif='normal', hints=0):
@@ -36,6 +40,11 @@ class App(Frame):
             self.puzzle.gen_puzzle(81-int(hints))
 
         self._init_grid()
+
+    def solve(self):
+        self.puzzle.fill_grid(False)
+        for e in self.entries:
+            e.insert(0, str(self.puzzle.grid[e.y][e.x]))
 
     def center(self):
         root = self.master
@@ -55,6 +64,7 @@ class App(Frame):
     def _init_grid(self):
         grid = self.puzzle.grid
         size = self.cell_size
+        self.entries = []
         gap = 3
         vcmd = (self.register(self._only_int))
 
@@ -87,6 +97,7 @@ class App(Frame):
                             ygap, width=size, height=size)
                     e.x = x
                     e.y = y
+                    self.entries.append(e)
                     e.bind('<Return>', self._on_enter)
                     e.bind('<BackSpace>', self._on_delete)
 
