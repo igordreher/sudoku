@@ -3,33 +3,42 @@ from sudoku import Sudoku
 
 
 class App(Frame):
-    def __init__(self, master=None, cell_size=int(40)):
-        super().__init__(master=master, width=cell_size*9+3*2, height=cell_size*9+3*2)
+    def __init__(self, master=None, cell_size=int(50)):
+        super().__init__(master=master)
         self.master = master
         self.master.title("Sudoku")
         self.puzzle = Sudoku()
         self.cell_size = cell_size
         self.size = self.cell_size*9+3*2
         self._init_canvas()
+        # self.menu()
         self.center()
-        self.pack()
+        self.pack(fill=BOTH, expand=1)
+
+    # def menu(self):
+        # def hello():
+        #     print('Hello')
+        # menubar = Menu(self)
+        # self.update()
+        # options = Menu(menubar, tearoff=0)
+        # options.add_command(label='hello', command=hello)
+        # menubar.add_cascade(label='menu', menu=options)
+        # self.master.config(menu=menubar)
 
     def center(self):
         root = self.master
         screen_w = self.winfo_screenwidth()
         screen_y = self.winfo_screenheight()
-        x = int(screen_w/2 - self.winfo_reqwidth()/2)
-        y = int(screen_y/2 - self.winfo_reqheight()/2)
+        x = int(screen_w/2 - self.size/2)
+        y = int(screen_y/2 - self.size/2)
         root.geometry("+{}+{}".format(x, y))
         self.update()
-        root.minsize(self.winfo_reqwidth(), self.winfo_reqheight())
-        root.maxsize(self.winfo_reqwidth(), self.winfo_reqheight())
+        root.minsize(self.size, self.size)
 
     def _init_canvas(self):
-        self.canvas = Canvas(self, width=self.size,
-                             height=self.size, bg='black')
+        self.canvas = Canvas(self, bg='black')
         self._init_grid()
-        self.canvas.pack()
+        self.canvas.pack(fill=BOTH, expand=1)
 
     def _init_grid(self):
         grid = self.puzzle.grid
