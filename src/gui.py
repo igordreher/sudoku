@@ -7,6 +7,7 @@ class App(Frame):
         super().__init__(master=master, width=cell_size*9+3*2, height=cell_size*9+3*2)
         self.master = master
         self.master.title("Sudoku")
+        self.puzzle = Sudoku()
         self.cell_size = cell_size
         self.size = self.cell_size*9+3*2
         self._init_canvas()
@@ -31,8 +32,7 @@ class App(Frame):
         self.canvas.pack()
 
     def _init_grid(self):
-        su = Sudoku()
-        grid = su.grid
+        grid = self.puzzle.grid
         size = self.cell_size
         gap = 3
         vcmd = (self.register(self._only_int))
@@ -55,23 +55,35 @@ class App(Frame):
 
                 if grid[y][x] != 0:
                     lb = Label(self.canvas, text=str(
-                        grid[y][x]), bg='white', fg='black', relief=SUNKEN, font='10')
+                        grid[y][x]), bg='white', fg='black', relief=SUNKEN, font='11')
                     lb.place(x=x*size+xgap, y=y*size +
                              ygap, width=size, height=size)
 
                 else:
-                    e = Entry(self.canvas, justify=CENTER, bg='white', fg='black', font='10',
-                              bd=1, highlightcolor='red', highlightthickness=0, insertbackground='gray', validate='key', vcmd=(vcmd, '%P'))
+                    e = Entry(self.canvas, justify=CENTER, bg='#dddddd', fg='black', font='11',
+                              bd=1, highlightcolor='red', highlightthickness=0, insertbackground='black', validate='key', vcmd=(vcmd, '%P'))
                     e.place(x=x*size+xgap, y=y*size +
                             ygap, width=size, height=size)
-                    e.bind('<FocusIn>', self._on_focus)
-                    e.bind('<FocusOut>', self._off_focus)
+                    e.x = x
+                    e.y = y
+                    e.bind('<Return>', self._on_enter)
+                    e.bind('<BackSpace>', self._on_delete)
 
-    def _on_focus(self, evt):
-        evt.widget.config(bg='gray')
+    def _on_enter(self, evt):
+        x = evt.widget.x
+        y = evt.widget.y
+        value = int(evt.widget.get())
+        if self.puzzle.possible(y, x, value):
+            evt.widget.config(fg='green')
+        else:
+            evt.widget.config(fg='red')
+        self.puzzle.grid[y][x] = value
 
-    def _off_focus(self, evt):
-        evt.widget.config(bg='white')
+    def _on_delete(self, evt):
+        x = evt.widget.x
+        y = evt.widget.y
+        self.puzzle.grid[y][x] = 0
+        evt.widget.config(fg='black')
 
     def _only_int(self, P):
         if P:
