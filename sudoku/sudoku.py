@@ -30,7 +30,7 @@ class Sudoku:
             self.grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
     def fill_grid(self):
-        """Solves the puzzle, returning true when grid is filled"""
+        """Solves the puzzle, filling the grid"""
         for y in range(9):
             for x in range(9):
                 if self.grid[y][x] == self.EMPTY_CELL:
@@ -46,7 +46,8 @@ class Sudoku:
             if self.is_value_possible(value, cell_position):
                 self.grid[y][x] = value
 
-                if self.fill_grid():
+                is_grid_filled = self.fill_grid()
+                if is_grid_filled:
                     return True
 
                 self.grid[y][x] = self.EMPTY_CELL
