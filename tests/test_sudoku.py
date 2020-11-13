@@ -1,5 +1,5 @@
 import unittest
-from src.sudoku import Sudoku
+from sudoku.sudoku import Sudoku
 
 
 class TestSudoku(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestSudoku(unittest.TestCase):
         self.sudoku.grid = grid_copy
 
     def test_grid_is_empty(self):
-        self.sudoku._clear_grid()
+        self.sudoku.clear_grid()
         grid = self.sudoku.grid
 
         for y in range(9):
@@ -74,15 +74,16 @@ class TestSudoku(unittest.TestCase):
                 self.sudoku.grid[y][x] = number
 
     def test_grid_filled(self):
-        self.sudoku._clear_grid()
+        self.sudoku.clear_grid()
         self.sudoku.fill_grid()
+        print(self.sudoku)
 
         for y in range(9):
             for x in range(9):
                 assert self.sudoku.grid[y][x] != 0
 
     def test_grid_filled_all_possible(self):
-        self.sudoku._clear_grid()
+        self.sudoku.clear_grid()
         self.sudoku.fill_grid()
 
         for y in range(9):
@@ -94,7 +95,7 @@ class TestSudoku(unittest.TestCase):
                 self.sudoku.grid[y][x] = number
 
     def test_number_of_cleared_cells(self):
-        self.sudoku._clear_random_cells(20)
+        self.sudoku._clear_random_cell_pairs(15)
         count = 0
 
         for y in range(9):
@@ -102,4 +103,4 @@ class TestSudoku(unittest.TestCase):
                 if self.sudoku.grid[y][x] == 0:
                     count += 1
 
-        assert count is 20
+        assert count is 30 or count is 29
