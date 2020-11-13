@@ -1,5 +1,5 @@
 import unittest
-from sudoku.sudoku import Sudoku
+from src.sudoku import Sudoku
 
 
 class TestSudoku(unittest.TestCase):
