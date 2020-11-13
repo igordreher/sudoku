@@ -1,48 +1,37 @@
 from tkinter import *
 from functools import partial
-from sudoku.sudoku import Sudoku
+from sudoku import Sudoku
 
 
-class App(Frame, Sudoku):
+class App(Frame):
     def __init__(self, master=None, cell_size=int(50)):
         super().__init__(master=master)
         self.master = master
         self.master.title("Sudoku")
+        self.puzzle = Sudoku()
         self.cell_size = cell_size
         self.size = self.cell_size*9+3*2
         self._init_canvas()
-        self._init_menubar()
+        self.menu()
         self.center()
         self.pack(fill=BOTH, expand=1)
 
-    def _init_canvas(self):
-        self.canvas = Canvas(self, bg='black')
-        self.new_puzzle()
-        self.canvas.pack(fill=BOTH, expand=1)
-
-    def _init_menubar(self):
-        self.menubar = Menu(self)
-        self._init_menubar_commands()
-        self.master.config(menu=menubar)
-
-    def _init_menubar_commands(self):
-        new_game = self._new_game_menu()
-        self.menubar.add_cascade(label='New Game', menu=new_game)
-        self.menubar.add_command(label='Solve', command=self.solve)
-
-    def _new_game_menu(self):
-        new_game = Menu(self.menubar, tearoff=0)
+    def menu(self):
+        menubar = Menu(self)
+        new_game = Menu(menubar, tearoff=0)
         new_game.add_command(label='Easy', command=partial(
             self.new_puzzle, dif='easy'))
         new_game.add_command(label='Normal', command=partial(
             self.new_puzzle, dif='normal'))
         new_game.add_command(label='Hard', command=partial(
             self.new_puzzle, dif='hard'))
-        return new_game
+        menubar.add_cascade(label='New Game', menu=new_game)
+        menubar.add_command(label='Solve', command=self.solve)
+        self.master.config(menu=menubar)
 
     def new_puzzle(self, dif='normal', hints=0):
         if dif == 'normal':
-            super().generate_new_puzzle(40)
+            self.puzzle.gen_puzzle(81-40)
         elif dif == 'easy':
             self.puzzle.gen_puzzle(81-60)
         elif dif == 'hard':
@@ -66,6 +55,11 @@ class App(Frame, Sudoku):
         root.geometry("+{}+{}".format(x, y))
         self.update()
         root.minsize(self.size, self.size)
+
+    def _init_canvas(self):
+        self.canvas = Canvas(self, bg='black')
+        self.new_puzzle()
+        self.canvas.pack(fill=BOTH, expand=1)
 
     def _init_grid(self):
         grid = self.puzzle.grid
