@@ -1,5 +1,6 @@
-import numpy
 import random
+from typing import Tuple
+import numpy
 
 
 class Sudoku:
@@ -7,45 +8,54 @@ class Sudoku:
     EMPTY_CELL = 0
 
     def __init__(self):
-        self._clear_grid()
+        """Start grid as an empty list[9][9]"""
+        self.clear_grid()
 
     def __repr__(self):
         return str(numpy.array(self.grid))
 
-    def generate_new_puzzle(self, n_of_blank_cells=20):
-        self._clear_grid()
+    def generate_new_puzzle(self, n_of_hints: int):
+        """
+        Clears grid and generates a new puzzle with, closely, given number of hints
+        """
+        cell_pairs_to_clear = (81-n_of_hints)/2
+        self.clear_grid()
         self.fill_grid()
-        self._clear_random_cells(n_of_blank_cells)
+        self._clear_random_cell_pairs(cell_pairs_to_clear)
 
-    def _clear_grid(self):
+    def clear_grid(self):
+        """Empty all cells"""
         self.grid = []
         for _ in range(9):
             self.grid.append([0, 0, 0, 0, 0, 0, 0, 0, 0])
 
     def fill_grid(self):
+        """Solves the puzzle, returning true when grid is filled"""
+        for y in range(9):
+            for x in range(9):
+                if self.grid[y][x] == self.EMPTY_CELL:
+                    cell_position = (x, y)
+                    return self._is_solution_possible(cell_position)
+        return True
+
+    def _is_solution_possible(self, cell_position):
         possible_values = list(range(1, 10))
+        x, y = cell_position
+        random.shuffle(possible_values)
+        for value in possible_values:
+            if self.is_value_possible(value, cell_position):
+                self.grid[y][x] = value
 
-        def loop():
-            for y in range(9):
-                for x in range(9):
-                    if self.grid[y][x] == self.EMPTY_CELL:
-                        random.shuffle(possible_values)
-                        cell_position = (x, y)
-                        for value in possible_values:
+                if self.fill_grid():
+                    return True
 
-                            if self.is_value_possible(value, cell_position):
-                                self.grid[y][x] = value
+                self.grid[y][x] = self.EMPTY_CELL
+        return False
 
-                                if loop():
-                                    return True
-
-                                self.grid[y][x] = self.EMPTY_CELL
-                        return False
-            return True
-
-        loop()
-
-    def is_value_possible(self, value, cell_position):
+    def is_value_possible(self, value: int, cell_position: Tuple[int, int]) -> bool:
+        """
+        Checks if value is possible on given position
+        """
         cell_x, cell_y = cell_position
 
         if self._is_value_in_row(value, cell_y):
@@ -82,10 +92,17 @@ class Sudoku:
                     return True
         return False
 
-    def _clear_random_cells(self, number_of_cells):
-        while number_of_cells > 0:
-            y = random.randint(0, 8)
+    def _clear_random_cell_pairs(self, number_of_pairs):
+        while number_of_pairs > 0:
             x = random.randint(0, 8)
+            y = random.randint(0, 8)
             if self.grid[y][x] != self.EMPTY_CELL:
-                self.grid[y][x] = self.EMPTY_CELL
-                number_of_cells -= 1
+                self._clear_cell_pair((x, y))
+                number_of_pairs -= 1
+
+    def _clear_cell_pair(self, first_cell_position):
+        x, y = first_cell_position
+        opposite_y = 8-y
+        opposite_x = 8-x
+        self.grid[y][x] = self.EMPTY_CELL
+        self.grid[opposite_y][opposite_x] = self.EMPTY_CELL
